@@ -4,17 +4,24 @@ import userRoutes from "./routes/user.route";
 
 const app = express();
 
-app.use(express.static(path.join(__dirname, "../../client/dist")));
-
 // Middleware
 app.use(express.json());
 
 // Routes
 app.use("/api/users", userRoutes);
 
-// Handle all other routes with the React app
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "../../client/dist", "index.html"));
+// Serve client app
+app.use(express.static(path.join(__dirname, "../../../client/dist")));
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "../../../client/dist", "index.html"));
+});
+
+// Serve admin panel
+app.use(express.static(path.join(__dirname, "../../../admin/dist")));
+
+// Serve any admin sub-route to the index.html (for SPA routing)
+app.get("/admin/*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../../../admin/dist", "index.html"));
 });
 
 export default app;
